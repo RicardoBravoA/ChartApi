@@ -33,14 +33,12 @@ $app->get('/year/', function() use ($app) {
 
     $db = new DbHandler();
     $response = $db->getAllYear();
-    echoResponse(200, $response);
 });
 
 // Store sales by year
     $app->get('/store/year/:year', function($year) use ($app) {
         $db = new DbHandler();
         $response = $db->getSalesStoreByYear($year);
-        echoResponse(200, $response);
     });
 
 
@@ -56,10 +54,15 @@ $app->get('/year/', function() use ($app) {
     });
 */
 
-function echoResponse($status_code, $response) {
+function echoResponse($isError, $response) {
     $app = \Slim\Slim::getInstance();
 
-    $app->status($status_code);
+    $app->status(200);
+
+    if($isError){
+        $app->status(500);
+    }
+
     $app->contentType('application/json');
 
     echo json_encode($response);

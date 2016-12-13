@@ -10,6 +10,7 @@ require '.././libs/Slim/Slim.php';
 
 $app = new \Slim\Slim();
 
+/*
 // Place By Description
 $app->get('/place/:description', function($description) use ($app) {
 
@@ -25,6 +26,35 @@ $app->get('/place/', function() use ($app) {
     $response = $db->getAllPlace();
     echoResponse(200, $response);
 });
+*/
+
+// All Years
+$app->get('/year/', function() use ($app) {
+
+    $db = new DbHandler();
+    $response = $db->getAllYear();
+    echoResponse(200, $response);
+});
+
+// Store sales by year
+    $app->get('/store/year/:year', function($year) use ($app) {
+        $db = new DbHandler();
+        $response = $db->getSalesStoreByYear($year);
+        echoResponse(200, $response);
+    });
+
+
+/*
+//Add Coupon
+    $app->post('/coupon/add', function() use ($app) {
+        verifyRequiredParams(array('description', 'image'));
+        $description = $app->request->post('description');
+        $image = $app->request->post('image');
+        $db = new DbHandler();
+        $response = $db->addCoupon($description, $image);
+        echoResponse(200, $response);
+    });
+*/
 
 function echoResponse($status_code, $response) {
     $app = \Slim\Slim::getInstance();

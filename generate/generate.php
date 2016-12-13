@@ -6,7 +6,7 @@ $total_year = 3;
 
 $year_init = $current_year - $total_year;
 
-$number_store = generateNumberBranch();
+$number_store = generateNumberStore();
 $number_branch = generateNumberBranch();
 
 
@@ -40,6 +40,10 @@ for($i=1; $i<=$number_store; $i++){
 
 function generateAmount(){
 	return rand(10, 99)."00";
+}
+
+function generateNumberStore(){
+    return rand(2, 5);
 }
 
 function generateNumberBranch(){

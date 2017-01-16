@@ -49,9 +49,9 @@ $app->get('/store/year/:year', function($year) use ($app) {
 });
 
 // Sales by year and store 
-$app->get('/store/year/', function($year) use ($app) {
+$app->get('/store/year/', function() use ($app) {
     $db = new DbHandler();
-    $response = $db->getSalesByStoreAndYear($year);
+    $response = $db->getSalesByStoreAndYear();
 });
 
 

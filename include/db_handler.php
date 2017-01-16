@@ -164,73 +164,79 @@ class DbHandler {
             $response["_meta"] = $meta;
             $error = true;
         }
-
         echoResponse($error, $response);
     }
 
     // Store sales by year
     public function getSalesByStoreAndYear() {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         $response = array();
+        $meta = array();
+        $stmtYear = $this->conn->prepare("SELECT DISTINCT year_sale FROM sale_master ORDER BY year_sale");
+        $stmtYear->execute();
+        $resultYear = $stmtYear->get_result();
+        $stmtYear->close();
+        $data = array();
+        $yearArray = array();
         $error = false;
-        $stmt = $this->conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ? GROUP BY store_id, store_description, year_sale order by store_description");
-        $stmt->bind_param("s", $year);
-        if($stmt->execute()){
-            $stmt->bind_result($store_id, $store_description, $year_sale, $amount);
-            $stmt->store_result();
-            if($stmt->num_rows>0){
-                $data = array();
-                while ($stmt->fetch()) {
-                    $tmp = array();
-                    $tmp["store_id"] = $store_id;
-                    $tmp["store_description"] = $store_description;
-                    $tmp["year_sale"] = $year_sale;
-                    $tmp["amount"] = $amount;
-                    array_push($data, $tmp);
+        $responseTotal = array();
+
+        if($resultYear->num_rows >0){
+
+            while ($dataQueryYear = $resultYear->fetch_assoc()) {
+                $yearTmp = array();
+                $year = $dataQueryYear['year_sale'];
+                $data["year"] = $year;
+
+                // get stores
+                $stmtStore = $this->conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ? 
+                            GROUP BY store_id, store_description, year_sale order by store_description");
+                $stmtStore->bind_param("s", $year);
+                if($stmtStore->execute()){
+                    $stmtStore->bind_result($store_id, $store_description, $year_sale, $amount);
+                    $stmtStore->store_result();
+                    if($stmtStore->num_rows>0){
+                        $dataStore = array();
+                        while ($stmtStore->fetch()) {
+                            $tmp = array();
+                            $tmp["store_id"] = $store_id;
+                            $tmp["store_description"] = $store_description;
+                            $tmp["year_sale"] = $year_sale;
+                            $tmp["amount"] = $amount;
+                            array_push($dataStore, $tmp);
+                        }
+                        $data["store"] = $dataStore;
+                        array_push($responseTotal, $data);
+                        $error = false;
+                    }else{
+                        $meta = array();
+                        $meta["status"] = "error";
+                        $meta["code"] = "101";
+                        $response["_meta"] = $meta;
+                        $error = true;
+                    }
+                }else{
+                    $meta = array();
+                    $meta["status"] = "error";
+                    $meta["code"] = "100";
+                    $response["_meta"] = $meta;
+                    $error = true;
                 }
-                /*
-                $_meta = array();
-                $_meta["status"]="success";
-                $_meta["code"]="200";
-                $response["_meta"] = $_meta;
-                */
-                $error = false;
-                $response["data"] = $data;
-            }else{
-                $meta = array();
-                $meta["status"] = "error";
-                $meta["code"] = "101";
-                $response["_meta"] = $meta;
-                $error = true;
+
             }
+            
+            $error = false;
+
         }else{
-            $meta = array();
             $meta["status"] = "error";
             $meta["code"] = "100";
-            $response["_meta"] = $meta;
+            $meta["message"] = "No existen años de ventas";
+            $responseTotal["_meta"] = $meta;
             $error = true;
         }
 
-        echoResponse($error, $response);
+        echoResponse($error, $responseTotal);
+
     }
 
     public function isError(){

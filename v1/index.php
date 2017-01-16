@@ -36,10 +36,16 @@ $app->get('/year/', function() use ($app) {
 });
 
 // Store sales by year
-    $app->get('/store/year/:year', function($year) use ($app) {
-        $db = new DbHandler();
-        $response = $db->getSalesStoreByYear($year);
-    });
+$app->get('/store/year/:year', function($year) use ($app) {
+    $db = new DbHandler();
+    $response = $db->getSalesStoreByYear($year);
+});
+
+// Sales by year and store 
+$app->get('/store/year/', function($year) use ($app) {
+    $db = new DbHandler();
+    $response = $db->getSalesByStoreAndYear($year);
+});
 
 
 /*

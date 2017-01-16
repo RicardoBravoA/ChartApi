@@ -35,6 +35,13 @@ $app->get('/year/', function() use ($app) {
     $response = $db->getAllYear();
 });
 
+// All Stores
+$app->get('/store/', function() use ($app) {
+
+    $db = new DbHandler();
+    $response = $db->getAllStore();
+});
+
 // Store sales by year
 $app->get('/store/year/:year', function($year) use ($app) {
     $db = new DbHandler();

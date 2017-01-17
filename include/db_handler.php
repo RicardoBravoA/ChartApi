@@ -178,13 +178,13 @@ class DbHandler {
         $stmtYear->close();
         $data = array();
         $yearArray = array();
-        $error = false;
         $responseTotal = array();
+        $myResponse = array();
+        $error = false;
 
         if($resultYear->num_rows >0){
 
             while ($dataQueryYear = $resultYear->fetch_assoc()) {
-                $yearTmp = array();
                 $year = $dataQueryYear['year_sale'];
                 $data["year"] = $year;
 
@@ -204,22 +204,22 @@ class DbHandler {
                             $tmp["year_sale"] = $year_sale;
                             $tmp["amount"] = $amount;
                             array_push($dataStore, $tmp);
+                            $data["store"] = $dataStore;
                         }
-                        $data["store"] = $dataStore;
                         array_push($responseTotal, $data);
-                        $error = false;
+                        $myResponse["data"] = $responseTotal;
                     }else{
                         $meta = array();
                         $meta["status"] = "error";
                         $meta["code"] = "101";
-                        $response["_meta"] = $meta;
+                        $myResponse["_meta"] = $meta;
                         $error = true;
                     }
                 }else{
                     $meta = array();
                     $meta["status"] = "error";
                     $meta["code"] = "100";
-                    $response["_meta"] = $meta;
+                    $myResponse["_meta"] = $meta;
                     $error = true;
                 }
 
@@ -231,11 +231,11 @@ class DbHandler {
             $meta["status"] = "error";
             $meta["code"] = "100";
             $meta["message"] = "No existen años de ventas";
-            $responseTotal["_meta"] = $meta;
+            $myResponse["_meta"] = $meta;
             $error = true;
         }
 
-        echoResponse($error, $responseTotal);
+        echoResponse($error, $myResponse);
 
     }
 

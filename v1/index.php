@@ -54,6 +54,12 @@ $app->get('/store/year/', function() use ($app) {
     $response = $db->getSalesByStoreAndYear();
 });
 
+// sales of year by store
+$app->get('/store/:storeId', function($storeId) use ($app) {
+    $db = new DbHandler();
+    $response = $db->getYearSaleByStore($storeId);
+});
+
 
 /*
 //Add Coupon

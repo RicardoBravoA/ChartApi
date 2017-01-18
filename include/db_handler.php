@@ -239,6 +239,43 @@ class DbHandler {
 
     }
 
+    public function getYearSaleByStore($storeId){
+        $response = array();
+        $error = false;
+        $stmt = $this->conn->prepare("SELECT store_id, year_sale, SUM(amount) FROM sale_master WHERE store_id = ? GROUP BY store_id, year_sale");
+        $stmt->bind_param("s", $storeId);
+        if($stmt->execute()){
+            $stmt->bind_result($store_id, $year_sale, $amoun);
+            $stmt->store_result();
+            if($stmt->num_rows>0){
+                $data = array();
+                while ($stmt->fetch()) {
+                    $tmp = array();
+                    $tmp["store_id"] = $store_id;
+                    $tmp["year_sale"] = $year_sale;
+                    $tmp["amount"] = $amoun;
+                    array_push($data, $tmp);
+                }
+                $error = false;
+                $response["data"] = $data;
+            }else{
+                $meta = array();
+                $meta["status"] = "error";
+                $meta["code"] = "101";
+                $response["_meta"] = $meta;
+                $error = true;
+            }
+        }else{
+            $meta = array();
+            $meta["status"] = "error";
+            $meta["code"] = "100";
+            $response["_meta"] = $meta;
+            $error = true;
+        }
+        echoResponse($error, $response);
+
+    }
+
     public function isError(){
         return $error;
     }

@@ -172,7 +172,7 @@ class DbHandler {
     public function getSalesStore($id_store) {
         $response = array();
         $error = false;
-        $stmt = $this->conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE store_id = ? GROUP BY store_id, store_description, year_sale order by store_description");
+        $stmt = $this->conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE store_id = ? GROUP BY store_id, store_description, year_sale order by year_sale");
         $stmt->bind_param("s", $id_store);
         if($stmt->execute()){
             $stmt->bind_result($store_id, $store_description, $year_sale, $amount);

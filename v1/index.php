@@ -48,6 +48,12 @@ $app->get('/store/year/:year', function($year) use ($app) {
     $response = $db->getSalesStoreByYear($year);
 });
 
+// Store sales by store group by year
+$app->get('/store/:id_store/year', function($id_store) use ($app) {
+    $db = new DbHandler();
+    $response = $db->getSalesStore($id_store);
+});
+
 // Sales by year and store 
 $app->get('/store/year/', function() use ($app) {
     $db = new DbHandler();

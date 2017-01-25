@@ -11,3 +11,14 @@
 Thumbs.db
 
 
+php/php.ini
+php/php_project/MySQL/
+php/php_project/composer.json
+php/php_project/composer.lock
+php/php_project/composer.phar
+php/php_project/libs/
+php/php_project/src/classes/Mapper.php
+php/php_project/src/dependencies.php
+php/php_project/src/routes.php
+php/php_project/src/settings.php
+php/php_project/v1/

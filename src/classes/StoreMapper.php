@@ -211,7 +211,7 @@ class StoreMapper extends Mapper
                 $data["year"] = $year;
 
                 // get stores
-                $stmtStore = $this->conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ?
+                $stmtStore = $this->$conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ?
                             GROUP BY store_id, store_description, year_sale order by store_description");
                 $stmtStore->bind_param("s", $year);
                 if($stmtStore->execute()){

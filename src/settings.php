@@ -9,7 +9,7 @@
     return [
         "displayErrorDetails" => true,
         "db" => [
-            "host" => "localhost",
+            "host" => "172.17.0.1",
             "user" => "root",
             "pass" => "root",
             "dbname" => "chart_db",

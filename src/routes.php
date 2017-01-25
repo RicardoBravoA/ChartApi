@@ -13,7 +13,7 @@ spl_autoload_register(function ($classname) {
     require("../src/classes/" . $classname . ".php");
 });
 
-$app->get('/year', function (Request $request, Response $response) {
+$app->get('/year/', function (Request $request, Response $response) {
     $mapper = new StoreMapper($this->db);
     $data = $mapper->getAllYear();
 
@@ -26,7 +26,7 @@ $app->get('/year', function (Request $request, Response $response) {
 
 
 // All Stores
-$app->get('/store', function (Request $request, Response $response) {
+$app->get('/store/', function (Request $request, Response $response) {
 
     $mapper = new StoreMapper($this->db);
     $data = $mapper->getAllStore();

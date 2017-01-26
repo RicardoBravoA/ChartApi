@@ -192,17 +192,17 @@ class StoreMapper extends Mapper
 
     // Store sales by year
     public function getSalesByStoreAndYear() {
+
         $conn = $this->db;
         $finalResponse = array();
         $response = array();
-        $meta = array();
+        $responseTotal = array();
         $stmtYear = $conn->prepare("SELECT DISTINCT year_sale FROM sale_master ORDER BY year_sale");
         $stmtYear->execute();
         $resultYear = $stmtYear->get_result();
         $stmtYear->close();
-        $data = array();
-        $responseTotal = array();
-        $myResponse = array();
+        $dataYear = array();
+        $errorCode = 500;
 
         if($resultYear->num_rows >0){
 
@@ -210,13 +210,14 @@ class StoreMapper extends Mapper
                 $year = $dataQueryYear['year_sale'];
                 $data["year"] = $year;
 
-                // get stores
-                $stmtStore = $this->$conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ?
+                $stmtStore = $conn->prepare("SELECT DISTINCT store_id, store_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ?
                             GROUP BY store_id, store_description, year_sale order by store_description");
                 $stmtStore->bind_param("s", $year);
+
                 if($stmtStore->execute()){
                     $stmtStore->bind_result($store_id, $store_description, $year_sale, $amount);
                     $stmtStore->store_result();
+
                     if($stmtStore->num_rows>0){
                         $dataStore = array();
                         while ($stmtStore->fetch()) {
@@ -228,8 +229,11 @@ class StoreMapper extends Mapper
                             array_push($dataStore, $tmp);
                             $data["store"] = $dataStore;
                         }
+
                         array_push($responseTotal, $data);
-                        $myResponse["data"] = $responseTotal;
+                        $response["data"] = $responseTotal;
+
+                        $errorCode = 200;
                     }else{
                         $meta = array();
                         $meta["status"] = "error";
@@ -244,15 +248,16 @@ class StoreMapper extends Mapper
                     $myResponse["_meta"] = $meta;
                     $errorCode = 500;
                 }
+
+
             }
 
-            $errorCode = 200;
-
         }else{
+            $meta = array();
             $meta["status"] = "error";
             $meta["code"] = "100";
-            $meta["message"] = "No existen años de ventas";
-            $myResponse["_meta"] = $meta;
+            $meta["message"] = "No existe información";
+            $response["_meta"] = $meta;
             $errorCode = 500;
         }
 
@@ -260,6 +265,7 @@ class StoreMapper extends Mapper
         $finalResponse["response"]=$response;
 
         return $finalResponse;
+        
     }
 
     public function getYearSaleByStore($storeId){

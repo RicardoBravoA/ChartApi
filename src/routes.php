@@ -52,14 +52,25 @@ $app->get('/store/year/{year}', function (Request $request, Response $response, 
 });
 
 //Store sales by store group by year
-$app->get('/store/{id_store}/year', function (Request $request, Response $response, $args) {
+$app->get('/store/{store_id}/year', function (Request $request, Response $response, $args) {
     $mapper = new StoreMapper($this->db);
-    $data = $mapper->getSalesStore($args['id_store']);
+    $data = $mapper->getSalesStore($args['store_id']);
 
     $response->getBody()->write(json_encode($data["response"]));
     $newResponse = $response->withStatus($data["errorCode"])
         ->withHeader('Content-Type', 'application/json; charset=utf-8');
 
+    return $newResponse;
+});
+
+//Branch sales by store group by year
+$app->get('/store/{store_id}/branch/', function (Request $request, Response $response, $args) {
+    $mapper = new StoreMapper($this->db);
+    $data = $mapper->getBranchSalesStore($args['store_id']);
+
+    $response->getBody()->write(json_encode($data["response"]));
+    $newResponse = $response->withStatus($data["errorCode"])
+        ->withHeader('Content-Type', 'application/json; charset=utf-8');
     return $newResponse;
 });
 

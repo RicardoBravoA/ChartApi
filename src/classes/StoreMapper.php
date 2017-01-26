@@ -141,6 +141,89 @@ class StoreMapper extends Mapper
         return $finalResponse;
     }
 
+    /**
+    *  Getting all Years
+    * @param Int $id_store year of sale
+    * @return array
+    */
+
+    // Branch sales by store and year
+    public function getBranchSalesStore($store_id) {
+        $conn = $this->db;
+        $finalResponse = array();
+        $response = array();
+        $responseTotal = array();
+        $stmtYear = $conn->prepare("SELECT DISTINCT year_sale FROM sale_master ORDER BY year_sale");
+        $stmtYear->execute();
+        $resultYear = $stmtYear->get_result();
+        $stmtYear->close();
+        $dataYear = array();
+        $errorCode = 500;
+
+        if($resultYear->num_rows >0){
+
+            while ($dataQueryYear = $resultYear->fetch_assoc()) {
+                $year = $dataQueryYear['year_sale'];
+                $data["year"] = $year;
+
+                $stmtStore = $conn->prepare("SELECT store_id, store_description, branch_id, branch_description, year_sale, SUM(amount) as amount FROM sale_master WHERE year_sale = ? AND store_id = ? GROUP BY branch_id, branch_description, year_sale order by year_sale");
+                $stmtStore->bind_param("ss", $year, $store_id);
+
+                if($stmtStore->execute()){
+                    $stmtStore->bind_result($store_id, $store_description, $branch_id, $branch_description, $year_sale, $amount);
+                    $stmtStore->store_result();
+
+                    if($stmtStore->num_rows>0){
+                        $dataStore = array();
+                        while ($stmtStore->fetch()) {
+                            $tmp = array();
+                            $tmp["store_id"] = $store_id;
+                            $tmp["store_description"] = $store_description;
+                            $tmp["branch_id"] = $branch_id;
+                            $tmp["branch_description"] = $branch_description;
+                            $tmp["year_sale"] = $year_sale;
+                            $tmp["amount"] = $amount;
+                            array_push($dataStore, $tmp);
+                            $data["branch"] = $dataStore;
+                        }
+
+                        array_push($responseTotal, $data);
+                        $response["data"] = $responseTotal;
+
+                        $errorCode = 200;
+                    }else{
+                        $meta = array();
+                        $meta["status"] = "error";
+                        $meta["code"] = "101";
+                        $myResponse["_meta"] = $meta;
+                        $errorCode = 500;
+                    }
+                }else{
+                    $meta = array();
+                    $meta["status"] = "error";
+                    $meta["code"] = "100";
+                    $myResponse["_meta"] = $meta;
+                    $errorCode = 500;
+                }
+
+
+            }
+
+        }else{
+            $meta = array();
+            $meta["status"] = "error";
+            $meta["code"] = "100";
+            $meta["message"] = "No existe información";
+            $response["_meta"] = $meta;
+            $errorCode = 500;
+        }
+
+        $finalResponse["errorCode"]= $errorCode;
+        $finalResponse["response"]=$response;
+
+        return $finalResponse;
+    }
+
 
     // Store sales by year
     public function getSalesStore($id_store) {
